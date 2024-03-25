@@ -1,0 +1,3 @@
+DROP DATABASE IF EXISTS steam_game_DB;
+
+CREATE DATABASE steam_game_DB;
