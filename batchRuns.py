@@ -27,8 +27,4 @@ def game_batch_details(limit = 5):
 
     
 if __name__ == "__main__":
-    print(game_batch_details(500))
-
-# there may be some kind of rate limiting factor on the api calls you can make in a minute
-# trial batches in increasing increments of 50 to see where the limit is and then
-# implemenet a wait function between api calls
+    print(game_batch_details(3000))

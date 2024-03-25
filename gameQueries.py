@@ -29,5 +29,30 @@ def fetch_game_nulls():
     except(Exception, pg.DatabaseError) as error:
         print(error)
 
+def fetch_games():
+    config = load_config()
+    sql = """SELECT appid, game_name FROM games
+            WHERE app_type = 'game' OR app_type IS NULL"""
+    try:
+        with pg.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql)
+                return cur.fetchall()
+    except(Exception, pg.DatabaseError) as error:
+        print(error)
+
+
+def fetch_game_info(appid):
+    config = load_config()
+    sql = """SELECT * FROM games
+            WHERE appid = %s"""
+    try:
+        with pg.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, [appid] )
+                return cur.fetchone()
+    except(Exception, pg.DatabaseError) as error:
+        print((error))
+
 if __name__ == "__main__":
-    print(fetch_game_nulls())
+    print(fetch_game_info(2376210))

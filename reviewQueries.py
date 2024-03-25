@@ -35,7 +35,19 @@ def fetch_reviews(appid, sentiment):
                 return list_of_reviews
     except (Exception, pg.DatabaseError) as error:
         print(error)
-
+def get_last_review(appid):
+    config = load_config()
+    sql = """SELECT timestamp_updated:: DATE from reviews
+WHERE appid = %s
+ORDER BY timestamp_updated DESC
+limit 1;;"""
+    try:
+        with pg.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, [appid])
+                return cur.fetchone()
+    except (Exception, pg.DatabaseError) as error:
+        print(error)
 
 if __name__ == '__main__':
-    print(type(fetch_reviews(413150, True)))
+    print(get_last_review(20))

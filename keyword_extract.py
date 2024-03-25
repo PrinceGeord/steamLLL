@@ -7,15 +7,27 @@ from pyspark.ml import Pipeline
 from pyspark.ml.feature import StopWordsRemover
 import pyspark.sql.functions as F
 import pandas as pd
-from reviewQueries import fetch_reviews
+from reviewQueries import fetch_reviews, insert_reviews, get_last_review
 from gameQueries import fetch_game_name
+from datetime import date
+
 
 def get_keywords(appid, sentiment):
-    spark = sparknlp.start()
-    reviews = fetch_reviews(appid, sentiment)
-    game_name = fetch_game_name(appid).lower().split(" ")
-    steam_stopwords = ['recommendation', 'game']+game_name
+    today = date.today()
+    date_of_last_review_fetch = get_last_review(appid)
+    if date_of_last_review_fetch is not None and date_of_last_review_fetch[0] >= today:
+        reviews = fetch_reviews(appid, sentiment)
+    else:
+        insert_reviews(appid)
+        reviews = fetch_reviews(appid, sentiment)
+    if len(reviews) == 0:
+        return "No review data found"
     
+    spark = sparknlp.start()
+    # code to add game_name into list of stop words. Impacted quality of data
+    # game_name = fetch_game_name(appid).lower().split(" ")
+    steam_stopwords = []
+    # 'recommendation', 'game'
 # Step 1: Transforms raw texts to 'document' annotation
     document = DocumentAssembler() \
         .setInputCol("text") \
@@ -51,8 +63,8 @@ def get_keywords(appid, sentiment):
     .setInputCols(["lemma"])\
     .setOutputCol("keywords")\
     .setMinNGrams(1)\
-    .setMaxNGrams(1)\
-    .setNKeywords(20)\
+    .setMaxNGrams(3)\
+    .setNKeywords(200)\
     .setStopWords(stop_words.getStopWords()+steam_stopwords)
 # setNKeywords is untested and may need to be turned off, not sure if it will skew data. Extracts the top n keywords
 # another function to check is setThreshold(float) - each keyword will be given a keyword score greater than 0, lower the score the better. Set an upper bound for the keyword score from this method
@@ -76,12 +88,12 @@ def get_keywords(appid, sentiment):
 
     light_result = light_model.fullAnnotate(reviews)[0]
 
-    keys_df = pd.DataFrame([(k.result, k.metadata['score'], k.metadata['sentence']) for k in light_result['keywords']],
-                            columns = ['keywords', 'score', 'sentence'])
+    keys_df = pd.DataFrame([(k.result, k.metadata['score']) for k in light_result['keywords']],
+                            columns = ['keywords', 'score'])
     keys_df['score'] = keys_df['score'].astype(float)
 
 # ordered by relevance
-    return keys_df.sort_values(['score'], ascending=False).head(10)
+    return keys_df.sort_values(['score'], ascending=False)
 
 if __name__ == "__main__":
-    print(get_keywords(10, False))
+    print(get_keywords(1091500, False))
