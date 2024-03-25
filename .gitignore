@@ -2,3 +2,6 @@ database.ini
 spiking
 genreList.txt
 playground.sql
+__pycache__
+batchmisses*
+steamXEnv
