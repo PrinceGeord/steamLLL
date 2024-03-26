@@ -13,7 +13,9 @@ def create_tables():
     short_desc TEXT,
     thumbnail TEXT,
     background TEXT,
-    last_review_request TIMESTAMP
+    last_review_request DATE
+    p_keyword JSON
+    n_keyword JSON
     )
 """,
 """ CREATE TABLE reviews (

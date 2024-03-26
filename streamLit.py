@@ -8,25 +8,12 @@ from PIL import Image
 from io import BytesIO
 import requests
 from wordcloud import WordCloud
-from gameQueries import fetch_games, fetch_game_info
-from insertGames import insert_game_details
-from keyword_extract import get_keywords
+from gameQueries import fetch_games
+from streamlitFunc import load_game
+
 
 
 df = pd.DataFrame(fetch_games(), columns=['appid', 'game_name'])
-
-def load_game(appid):
-     info = fetch_game_info(appid)
-     if info[2] == None:
-          insert_game_details(appid)
-          info = fetch_game_info(appid)
-     if info[8] == None:
-          p_keywords = get_keywords(appid, True).to_dict(orient='records')
-          n_keywords = get_keywords(appid, False).to_dict(orient='records')
-     else:
-          p_keywords = info[7]
-          n_keywords = info[7]
-     return {'info': info, 'p_keywords': p_keywords, 'n_keywords': n_keywords }
 
 
 
@@ -58,13 +45,8 @@ if text_search:
 
 # wordcloud - idea. Have a postive and a negative wordcloud image shaped to an emoji (e.g. postive is heart shape, negative is a frowney face)
 
-game_info = load_game(2357570)
-raw_wcf_input = game_info['p_keywords']
-wcf_input = {}
+wcf_input = load_game(2357570)['p_keywords']
 
-
-for word in raw_wcf_input:
-     wcf_input.update({word['keywords']: word['score']})
 response = requests.get("https://raw.githubusercontent.com/R-CoderDotCom/samples/main/wordcloud-mask.jpg")
 p_mask = np.array(Image.open(BytesIO(response.content)))
 wcf = WordCloud(background_color= "azure", colormap = "Reds", max_words = 50, mask = p_mask, contour_width = 1, contour_color = 'red').fit_words(wcf_input)

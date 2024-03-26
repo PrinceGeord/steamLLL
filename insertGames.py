@@ -68,6 +68,24 @@ def insert_game_details(appid):
             print(error)
             return False
 
+def update_keywords_cache(p_keywords, n_keywords, appid):
+    config=load_config()
+    sql = """UPDATE games
+            SET p_keywords = %s,
+            n_keywords = %s
+            WHERE appid = %s"""
+    try:
+        with pg.connect(**config) as conn:
+            with conn.cursor() as cur:
+                cur.execute(sql, [p_keywords, n_keywords, appid])
+                conn.commit()
+                return "keyword_cache_updated"
+    except (Exception, pg.DatabaseError) as error:
+        print(error)
+        return 'keyword_cache update failed'
+
+
+
 
 if __name__ == '__main__':
-   print(insert_game_details(5122))
+   print(update_keywords_cache('{"potato": 6, "tomato": 5}','{"orange": 4.3, "melon": 2.0}', 2357570))

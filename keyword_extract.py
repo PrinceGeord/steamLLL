@@ -13,17 +13,10 @@ from datetime import date
 
 
 def get_keywords(appid, sentiment):
-    today = date.today()
-    date_of_last_review_fetch = get_last_review(appid)
-    print(f'Today: {today} Last Review Date: {date_of_last_review_fetch}')
-    if date_of_last_review_fetch is not None and date_of_last_review_fetch[0] >= today:
-        reviews = fetch_reviews(appid, sentiment)
-    else:
-        insert_reviews(appid)
-        reviews = fetch_reviews(appid, sentiment)
+    insert_reviews(appid)
+    reviews = fetch_reviews(appid, sentiment)
     if len(reviews) == 0:
         return "No review data found"
-    
     spark = sparknlp.start()
     # code to add game_name into list of stop words. Impacted quality of data
     # game_name = fetch_game_name(appid).lower().split(" ")
@@ -97,6 +90,6 @@ def get_keywords(appid, sentiment):
 
 if __name__ == "__main__":
     wcf_input = {}
-    for word in get_keywords(1091500, False).to_dict(orient='records'):
+    for word in get_keywords(2357570, False).to_dict(orient='records'):
          wcf_input.update({word['keywords']: word['score']})
     print(wcf_input)

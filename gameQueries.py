@@ -55,4 +55,4 @@ def fetch_game_info(appid):
         print((error))
 
 if __name__ == "__main__":
-    print(fetch_game_info(2376210))
+    print(fetch_game_info(2357570))
