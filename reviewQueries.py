@@ -1,11 +1,14 @@
 from steamApiCalls import get_game_reviews
+from datetime import date
 import datetime
 from config import load_config
 import psycopg2 as pg
 
-def insert_reviews(appid, page_limit):
+def insert_reviews(appid, page_limit=5):
     reviews = get_game_reviews(appid, page_limit)
-    sql = "INSERT INTO reviews(recommendationid, appid, review, voted_up, timestamp_created, timestamp_updated) VALUES(%s, %s, %s, %s, %s, %s)"
+    sql_review = """INSERT INTO reviews(recommendationid, appid, review, voted_up, timestamp_created, timestamp_updated) VALUES(%s, %s, %s, %s, %s, %s)
+                ON CONFLICT (recommendationid) DO NOTHING"""
+    sql_games = """UPDATE games SET last_review_request = %s WHERE appid = %s"""
     config = load_config() 
     form_reviews = []
     for review in reviews:
@@ -14,7 +17,8 @@ def insert_reviews(appid, page_limit):
     try:
         with pg.connect(**config) as conn:
             with conn.cursor() as cur:
-                cur.executemany(sql, form_reviews)
+                cur.executemany(sql_review, form_reviews)
+                cur.execute(sql_games, [date.today(), appid ])
                 conn.commit()
     except (Exception, pg.DatabaseError) as error:
         print(error)
@@ -35,6 +39,8 @@ def fetch_reviews(appid, sentiment):
                 return list_of_reviews
     except (Exception, pg.DatabaseError) as error:
         print(error)
+
+
 def get_last_review(appid):
     config = load_config()
     sql = """SELECT timestamp_updated:: DATE from reviews

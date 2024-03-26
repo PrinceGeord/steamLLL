@@ -15,6 +15,7 @@ from datetime import date
 def get_keywords(appid, sentiment):
     today = date.today()
     date_of_last_review_fetch = get_last_review(appid)
+    print(f'Today: {today} Last Review Date: {date_of_last_review_fetch}')
     if date_of_last_review_fetch is not None and date_of_last_review_fetch[0] >= today:
         reviews = fetch_reviews(appid, sentiment)
     else:
@@ -87,13 +88,15 @@ def get_keywords(appid, sentiment):
     light_model = LightPipeline(yake_Model)
 
     light_result = light_model.fullAnnotate(reviews)[0]
-
     keys_df = pd.DataFrame([(k.result, k.metadata['score']) for k in light_result['keywords']],
                             columns = ['keywords', 'score'])
     keys_df['score'] = keys_df['score'].astype(float)
 
-# ordered by relevance
-    return keys_df.sort_values(['score'], ascending=False)
+    print("DataFrame ready...dropping duplicates")
+    return keys_df.drop_duplicates(subset='keywords', inplace=False)
 
 if __name__ == "__main__":
-    print(get_keywords(1091500, False))
+    wcf_input = {}
+    for word in get_keywords(1091500, False).to_dict(orient='records'):
+         wcf_input.update({word['keywords']: word['score']})
+    print(wcf_input)
