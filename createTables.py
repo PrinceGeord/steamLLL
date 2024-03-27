@@ -1,5 +1,5 @@
 import psycopg2
-from config import load_config
+import streamlit as st
 
 def create_tables():
     commands = (
@@ -31,8 +31,7 @@ def create_tables():
 )"""
     )
     try:
-        config = load_config()
-        with psycopg2.connect(**config) as conn:
+        with psycopg2.connect(st.secrets["postgresql"]) as conn:
             with conn.cursor() as cur:
                 for command in commands:
                     cur.execute(command)

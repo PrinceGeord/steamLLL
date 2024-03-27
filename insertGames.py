@@ -1,6 +1,7 @@
 from steamApiCalls import get_all_games, get_game_details
 import psycopg2 as pg
 from config import load_config
+import streamlit as st
 
 def insert_one_game(appid, name, genre):
     sql = """ INSERT INTO games(appid, name, genre)
@@ -9,7 +10,7 @@ def insert_one_game(appid, name, genre):
     config = load_config()
 
     try:
-        with pg.connect(**config) as conn:
+        with pg.connect(st.secrets["postgresql"]) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, data)
                 conn .commit()
