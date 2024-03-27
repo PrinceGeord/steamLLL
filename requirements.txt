@@ -2,7 +2,6 @@ matplotlib
 pandas
 numpy
 altair
-io
 wordcloud
 sparknlp
 pyspark
