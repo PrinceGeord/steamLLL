@@ -14,7 +14,7 @@ def insert_reviews(appid, page_limit=5):
         form_review = {'recommendationid': int(review['recommendationid']), 'appid': appid, 'review': review['review'], 'voted_up': review['voted_up'], 'timestamp_created': datetime.datetime.fromtimestamp(review['timestamp_created']), 'timestamp_updated': datetime.datetime.fromtimestamp(review['timestamp_updated']) }
         form_reviews.append(list(form_review.values()))
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.executemany(sql_review, form_reviews)
                 cur.execute(sql_games, [date.today(), appid ])
@@ -26,7 +26,7 @@ def insert_reviews(appid, page_limit=5):
 def fetch_reviews(appid, sentiment):
     sql = """SELECT review FROM reviews WHERE appid = %s AND voted_up = %s;"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [appid, sentiment])
                 raw_reviews = cur.fetchall()
@@ -45,7 +45,7 @@ WHERE appid = %s
 ORDER BY timestamp_updated DESC
 limit 1;;"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [appid])
                 return cur.fetchone()
