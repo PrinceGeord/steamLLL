@@ -9,7 +9,6 @@ import requests
 from wordcloud import WordCloud
 from gameQueries import fetch_games
 from SLFunc import load_game
-from streamlit_extras.stylable_container import stylable_container
 
 df = pd.DataFrame(fetch_games(), columns=['appid', 'game_name', 'thumbnail'])
 
