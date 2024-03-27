@@ -14,9 +14,9 @@ from SLFunc import load_game
 st.set_page_config(page_title="DYGLLL", page_icon="❤️")
 
 if 'search' not in st.session_state:
-    st.session_state.search = ''
+    st.session_state['search'] = ''
 if 'game_selected' not in st.session_state:
-    st.session_state.game_selected = ''
+    st.session_state['game_selected'] = ''
 
 # page setup
 
