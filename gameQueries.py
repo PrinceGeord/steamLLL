@@ -1,13 +1,17 @@
-from config import load_config
+
 import psycopg2 as pg
-import time
+import os
 
 
 def fetch_game_name(appid):
-    config = load_config()
+
     sql = """SELECT game_name FROM games WHERE appid = %s;"""
     try:
-        with pg.connect(**config) as conn:
+        with pg.connect(dbname="pagila",
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
+            port="5432") as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [appid])
                 raw_name = cur.fetchone()
@@ -16,10 +20,9 @@ def fetch_game_name(appid):
         print(error)
 
 def fetch_game_nulls():
-    config = load_config()
     sql = """SELECT appid FROM games WHERE app_type IS NULL"""
     try:
-        with pg.connect(**config) as conn:
+        with pg.connect() as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 raw_list = cur.fetchall()
@@ -30,11 +33,14 @@ def fetch_game_nulls():
         print(error)
 
 def fetch_games():
-    config = load_config()
     sql = """SELECT appid, game_name, thumbnail FROM games
             WHERE app_type = 'game' OR app_type IS NULL"""
     try:
-        with pg.connect(**config) as conn:
+        with pg.connect(dbname="pagila",
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
+            port="5432") as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 return cur.fetchall()
@@ -43,11 +49,14 @@ def fetch_games():
 
 
 def fetch_game_info(appid):
-    config = load_config()
     sql = """SELECT * FROM games
             WHERE appid = %s"""
     try:
-        with pg.connect(**config) as conn:
+        with pg.connect(dbname="pagila",
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
+            port="5432") as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [appid] )
                 return cur.fetchone()

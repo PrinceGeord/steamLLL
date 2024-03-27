@@ -1,5 +1,5 @@
 import psycopg2
-from config import load_config
+import os
 
 def create_tables():
     commands = (
@@ -31,8 +31,11 @@ def create_tables():
 )"""
     )
     try:
-        config = load_config()
-        with psycopg2.connect(**config) as conn:
+        with psycopg2.connect(dbname="pagila",
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host="data-sandbox.c1tykfvfhpit.eu-west-2.rds.amazonaws.com",
+            port="5432") as conn:
             with conn.cursor() as cur:
                 for command in commands:
                     cur.execute(command)
