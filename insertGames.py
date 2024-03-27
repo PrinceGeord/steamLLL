@@ -18,7 +18,8 @@ def insert_one_game(appid, name, genre):
 
 
 def insert_games(games):
-    sql = "INSERT INTO games(appid, name) VALUES(%s, %s)"
+    sql = """INSERT INTO games(appid, game_name) VALUES(%s, %s)
+    ON CONFLICT (appid) DO NOTHING"""
     config = load_config()
     try:
         with pg.connect(**config) as conn:
@@ -88,4 +89,4 @@ def update_keywords_cache(p_keywords, n_keywords, appid):
 
 
 if __name__ == '__main__':
-   print(update_keywords_cache('{"potato": 6, "tomato": 5}','{"orange": 4.3, "melon": 2.0}', 2357570))
+   insert_games(get_all_games())

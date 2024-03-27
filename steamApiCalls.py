@@ -54,4 +54,4 @@ def get_game_details(appid):
 
 
 if __name__ == '__main__':
-    print(get_game_reviews(2194810))
+    print(len(get_all_games()))

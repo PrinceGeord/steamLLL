@@ -6,16 +6,16 @@ def create_tables():
         """
     CREATE TABLE games (
     appid INTEGER PRIMARY KEY,
-    game_name VARCHAR(200),
+    game_name VARCHAR(300),
     genre VARCHAR(60),
     app_type VARCHAR(20),
-    price INTEGER
+    price INTEGER,
     short_desc TEXT,
     thumbnail TEXT,
     background TEXT,
-    last_review_request DATE
-    p_keyword JSON
-    n_keyword JSON
+    last_review_request DATE,
+    p_keywords JSON,
+    n_keywords JSON
     )
 """,
 """ CREATE TABLE reviews (
