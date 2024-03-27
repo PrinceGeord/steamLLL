@@ -31,7 +31,7 @@ def create_tables():
 )"""
     )
     try:
-        with psycopg2.connect(st.secrets["postgresql"]) as conn:
+        with psycopg2.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 for command in commands:
                     cur.execute(command)

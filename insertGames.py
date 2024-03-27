@@ -8,7 +8,7 @@ def insert_one_game(appid, name, genre):
     data = (appid, name, genre)
 
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, data)
                 conn .commit()
@@ -20,7 +20,7 @@ def insert_games(games):
     sql = """INSERT INTO games(appid, game_name) VALUES(%s, %s)
     ON CONFLICT (appid) DO NOTHING"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.executemany(sql, games)
                 conn.commit()
@@ -46,7 +46,7 @@ def insert_game_details(appid):
         WHERE appid = %s;"""
         deetsList = [deets['type'], genres, deets['price'], deets['short_desc'], deets['thumbnail'], deets['background'], appid]
         try:
-            with pg.connect(st.secrets["postgresql"]) as conn:
+            with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
                 with conn.cursor() as cur:
                     cur.execute(sql, deetsList)
                     conn.commit()
@@ -57,7 +57,7 @@ def insert_game_details(appid):
     else: 
         sql = """UPDATE games SET app_type = 'config' WHERE appid = %s"""
         try:
-            with pg.connect(st.secrets["postgresql"]) as conn:
+            with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
                 with conn.cursor() as cur:
                     cur.execute(sql, [appid])
                     conn.commit()
@@ -72,7 +72,7 @@ def update_keywords_cache(p_keywords, n_keywords, appid):
             n_keywords = %s
             WHERE appid = %s"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [p_keywords, n_keywords, appid])
                 conn.commit()

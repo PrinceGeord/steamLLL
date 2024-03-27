@@ -5,7 +5,7 @@ import streamlit as st
 def fetch_game_name(appid):
     sql = """SELECT game_name FROM games WHERE appid = %s;"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [appid])
                 raw_name = cur.fetchone()
@@ -16,7 +16,7 @@ def fetch_game_name(appid):
 def fetch_game_nulls():
     sql = """SELECT appid FROM games WHERE app_type IS NULL"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 raw_list = cur.fetchall()
@@ -30,7 +30,7 @@ def fetch_games():
     sql = """SELECT appid, game_name, thumbnail FROM games
             WHERE app_type = 'game' OR app_type IS NULL"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql)
                 return cur.fetchall()
@@ -42,7 +42,7 @@ def fetch_game_info(appid):
     sql = """SELECT * FROM games
             WHERE appid = %s"""
     try:
-        with pg.connect(st.secrets["postgresql"]) as conn:
+        with pg.connect(host=st.secrets.host, database= st.secrets.database, user= st.secrets.user, password= st.secrets.password, options=st.secrets.options) as conn:
             with conn.cursor() as cur:
                 cur.execute(sql, [appid] )
                 return cur.fetchone()
@@ -50,4 +50,4 @@ def fetch_game_info(appid):
         print((error))
 
 if __name__ == "__main__":
-    print(st.secrets["postgresql"])
+    print(fetch_game_info(1336490))
