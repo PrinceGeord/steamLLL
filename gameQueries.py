@@ -50,4 +50,4 @@ def fetch_game_info(appid):
         print((error))
 
 if __name__ == "__main__":
-    print(fetch_game_info(1336490))
+    print(st.secrets["postgresql"])

@@ -10,13 +10,15 @@ from wordcloud import WordCloud
 from gameQueries import fetch_games
 from SLFunc import load_game
 
-df = pd.DataFrame(fetch_games(), columns=['appid', 'game_name', 'thumbnail'])
+
+st.set_page_config(page_title="DYGLLL", page_icon="❤️")
+
 
 # page setup
 
-st.set_page_config(page_title="DYGLLL", page_icon="❤️")
-st.title("Does Your Game Live Laugh Love?")
 
+st.title("Does Your Game Live Laugh Love?")
+df = pd.DataFrame(fetch_games(), columns=['appid', 'game_name', 'thumbnail'])
 # search feature
 
 
