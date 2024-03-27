@@ -22,7 +22,7 @@ if 'game_selected' not in st.session_state:
 
 
 st.title("Does Your Game Live Laugh Love?")
-df = pd.DataFrame(fetch_games(), columns=['appid', 'game_name', 'thumbnail'])
+st.session_state['df'] = pd.DataFrame(fetch_games(), columns=['appid', 'game_name', 'thumbnail'])
 # search feature
 
 
@@ -50,6 +50,7 @@ imageLocation = st.empty()
 
 
 if st.session_state.search != '':
+    df = st.session_state.df
     m1 = df["game_name"].str.contains(st.session_state.search)
     df_search = df[m1]
     N_cards_per_row = 1
