@@ -5,4 +5,4 @@ altair
 wordcloud
 sparknlp
 pyspark
-psychopg2
+psycopg2
