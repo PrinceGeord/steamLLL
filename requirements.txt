@@ -111,7 +111,7 @@ tqdm==4.66.2
 traitlets==5.14.2
 typing_extensions==4.10.0
 tzdata==2024.1
-urllib3==2.2.1
+urllib3==1.25.4
 watchdog==4.0.0
 wcwidth==0.2.13
 wordcloud==1.9.3
