@@ -31,7 +31,7 @@ def fetch_game_nulls():
 
 def fetch_games():
     config = load_config()
-    sql = """SELECT appid, game_name FROM games
+    sql = """SELECT appid, game_name, thumbnail FROM games
             WHERE app_type = 'game' OR app_type IS NULL"""
     try:
         with pg.connect(**config) as conn:
@@ -55,4 +55,4 @@ def fetch_game_info(appid):
         print((error))
 
 if __name__ == "__main__":
-    print(fetch_game_info(2357570))
+    print(fetch_game_info(1336490))

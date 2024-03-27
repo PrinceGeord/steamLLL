@@ -33,9 +33,11 @@ def get_game_reviews(appid, page_limit=5):
     for i in range(1, page_limit):
         review_page_response = requests.get(f'https://store.steampowered.com/appreviews/{appid}?json=1&day_range=365&num_per_page=100&filter_offtopic_activity=0&filter=recent&language=english&cursor={cursor}').json()
         cursor = review_page_response['cursor'].replace("+", "%2B")
-        reviews.append(review_page_response['reviews'])
+        if len(review_page_response['reviews']) > 0:
+            reviews.append(review_page_response['reviews'])
         if i == page_limit:
             break
+    print(len(reviews))
     return np.array(reviews).flatten()
 
 def get_game_details(appid):
@@ -52,4 +54,4 @@ def get_game_details(appid):
 
 
 if __name__ == '__main__':
-    print(get_game_details(5801))
+    print(get_game_reviews(2194810))

@@ -56,4 +56,4 @@ limit 1;;"""
         print(error)
 
 if __name__ == '__main__':
-    print(fetch_reviews(1336490, False))
+    print(insert_reviews(1336490))

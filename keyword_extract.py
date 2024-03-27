@@ -2,26 +2,21 @@ from sparknlp.base import *
 from sparknlp.annotator import *
 from sparknlp.common import *
 import sparknlp
-from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
-from pyspark.ml.feature import StopWordsRemover
-import pyspark.sql.functions as F
 import pandas as pd
-from reviewQueries import fetch_reviews, insert_reviews, get_last_review
-from gameQueries import fetch_game_name
-from datetime import date
+from reviewQueries import fetch_reviews, insert_reviews
 
 
-def get_keywords(appid, sentiment):
+def get_keywords(appid):
     insert_reviews(appid)
-    reviews = fetch_reviews(appid, sentiment)
-    if len(reviews) == 0:
+    p_reviews = fetch_reviews(appid, True)
+    n_reviews = fetch_reviews(appid, False)
+    if len(p_reviews) == 0 or len(n_reviews) == 0:
         return "No review data found"
     spark = sparknlp.start()
-    # code to add game_name into list of stop words. Impacted quality of data
-    # game_name = fetch_game_name(appid).lower().split(" ")
     steam_stopwords = []
-    # 'recommendation', 'game'
+
+
 # Step 1: Transforms raw texts to 'document' annotation
     document = DocumentAssembler() \
         .setInputCol("text") \
@@ -35,18 +30,18 @@ def get_keywords(appid, sentiment):
 
 #step 3: tokenization
     token = Tokenizer() \
-    .setInputCols("sentence") \
+    .setInputCols(["sentence"]) \
     .setOutputCol("token")\
     .setContextChars(["(", ")", "?", "!", ".", ","])
 
-# Bonus Step: Stopwords
+# Step 4: Stopwords
 
     stop_words = StopWordsCleaner().pretrained('stopwords_en', 'en')\
     .setInputCols(["token"])\
     .setOutputCol("cleanTokens")\
     .setCaseSensitive(False)
 
-# Extra Bonus Step: Lemmatizer
+# Step 5: Lemmatizer
     
     lemmatizer = LemmatizerModel.pretrained()\
     .setInputCols(["token"])\
@@ -80,16 +75,18 @@ def get_keywords(appid, sentiment):
 
     light_model = LightPipeline(yake_Model)
 
-    light_result = light_model.fullAnnotate(reviews)[0]
-    keys_df = pd.DataFrame([(k.result, k.metadata['score']) for k in light_result['keywords']],
+    p_light_result = light_model.fullAnnotate(p_reviews)[0]
+    n_light_result = light_model.fullAnnotate(n_reviews)[0]
+    p_keys_df = pd.DataFrame([(k.result, k.metadata['score']) for k in p_light_result['keywords']],
                             columns = ['keywords', 'score'])
-    keys_df['score'] = keys_df['score'].astype(float)
+    p_keys_df['score'] = p_keys_df['score'].astype(float)
+    n_keys_df = pd.DataFrame([(k.result, k.metadata['score']) for k in n_light_result['keywords']],
+                            columns = ['keywords', 'score'])
+    n_keys_df['score'] = n_keys_df['score'].astype(float)
+    print("DataFrames ready...dropping duplicates")
+    return [p_keys_df.drop_duplicates(subset='keywords', inplace=False) , n_keys_df.drop_duplicates(subset='keywords', inplace=False)]
 
-    print("DataFrame ready...dropping duplicates")
-    return keys_df.drop_duplicates(subset='keywords', inplace=False)
 
 if __name__ == "__main__":
-    wcf_input = {}
-    for word in get_keywords(2357570, False).to_dict(orient='records'):
-         wcf_input.update({word['keywords']: word['score']})
-    print(wcf_input)
+    data =  get_keywords(1151340)
+    print(len(data[0]), len(data[1]))
