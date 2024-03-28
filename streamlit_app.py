@@ -9,6 +9,7 @@ import requests
 from wordcloud import WordCloud
 from gameQueries import fetch_games
 from SLFunc import load_game
+import urllib.request
 
 
 st.set_page_config(page_title="DYGLLL", page_icon="❤️")
@@ -54,7 +55,9 @@ if st.session_state.search != '':
     m1 = df["game_name"].str.contains(st.session_state.search)
     df_search = df[m1]
     N_cards_per_row = 1
-    default_thumbnail = np.array(Image.open(BytesIO(requests.get("https://upload.wikimedia.org/wikipedia/commons/c/c1/Steam_Logo.png").content)))
+    # default_thumbnail = np.array(Image.open(requests.get("https://upload.wikimedia.org/wikipedia/commons/c/c1/Steam_Logo.png").content))
+    urllib.request.urlretrieve("https://upload.wikimedia.org/wikipedia/commons/c/c1/Steam_Logo.png", "Steam_logo.png")
+    default_thumbnail = Image.open("Steam_logo.png")
     for n_row, row in df_search.reset_index().iterrows():
         i = n_row%N_cards_per_row
         if i ==0:
