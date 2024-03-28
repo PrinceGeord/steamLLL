@@ -132,7 +132,9 @@ Then click the search button on one of the items in the results. If the query ha
 
 By default you will be presented with the Positive feedback first (steam reviews who recommended the game in question) and if you click the "Get Negative Feedback" button, the Negative feedback will be displayed
 
+## Known bugs
 
+If video games don't have enough reviews an error message will display about 'p_keywords' or 'n_keywords' not being found - these games simply need more data. This will be fixed in the future to provide a more intuitive error message
 
 
 
